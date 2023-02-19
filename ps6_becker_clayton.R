@@ -45,46 +45,114 @@ for (i in files) {
 
 file_name <- vector()
 
-# for (i in files) {
-#   writeLines(i)
-#   for(z in suffixes) {
-#     print(z)
-#     file_name <- str_c(i,z,".zip")
-#   }}
-
-
-for(i in files) {
+for (i in files) {
   writeLines(i)
-  for(z in suffixes){
+  for(z in suffixes) {
     print(z)
-    file_names <- str_c(i, z, ".zip")
-    file_name <- c(file_name, file_names)
-  }
-}
+    file_name <- str_c(i,z,".zip")
+  }}
+
+
+# for(i in files) {
+#   writeLines(i)
+#   for(z in suffixes){
+#     print(z)
+#     file_names <- str_c(i, z, ".zip")
+#     file_name <- c(file_name, file_names)
+#   }
+# }
 
 print(file_name)
 
 
 # Question 4 
 
-4. Next, you will construct the full 
-download URL for the data file. Create an object 
-called `file_url` that combines the `url` with the `file_name`. 
-Next, add a line that wraps `str_c()` within `writeLines()` to print the value of the object `file_url`
-
-_Hint_: `file_url` should look like `https://nces.ed.gov/ipeds/datacenter/data/HD2017.zip`, etc.
-
 file_url <- vector()
 
-file_url <- vector()
-
-for(i in files) {
-  print(i)
-  for(z in suffixes){
+for (i in files) {
+  writeLines(i)
+  for(z in suffixes) {
     print(z)
-    file_urls <- str_c(url, i, z, ".zip")
-    file_url <- c(file_url, file_urls)
-  }
+    file_name <- str_c(i,z,".zip")
+    file_url <- str_c(url, file_name)
+  }}
+
+# for(i in files) {
+#   print(i)
+#   for(z in suffixes){
+#     print(z)
+#     file_urls <- str_c(url, i, z, ".zip")
+#     file_url <- c(file_url, file_urls)
+#   }
+# }
+
+# Question 5
+
+for (i in files) {
+  writeLines(i)
+  for(z in suffixes) {
+    print(z)
+    file_name <- str_c(i,z,".zip")
+    file_url <- str_c(url, file_name)
+    download.file(url = file_url, destfile = file.path(data_dir, file_name))
+  }}
+
+# for (i in files) {
+#   for (z in suffixes) {
+#     file_url_download <- str_c(url, i, z, ".zip")
+#     writeLines(str_c("file_url = ", file_url_download))
+#     dest_file <- file.path(data_dir, str_c(i, z, ".zip"))
+#     download.file(file_url_download, destfile = dest_file)
+#   }
+# }
+
+
+## -----------------------------------------------------------------------------
+## Part 3 - Label each question using comments
+## -----------------------------------------------------------------------------
+
+unzip(file.path(zipfile = data_dir, "HD2018.zip"), 
+      exdir = data_dir)
+
+# Question 1
+
+for (i in 1:length(files)) {
+  print(files[i])
+  print(files[[i]])
+}
+
+# Question 2 
+
+for (i in 1:length(files)) {
+  print(files[i])
+  print(files[[i]])
+  unzip(zipfile = file.path(data_dir, str_c(files[[i]],".zip")), 
+        exdir = data_dir)
+}
+
+# Question 3
+
+for (i in 1:length(files)) {
+  print(files[i])
+  print(files[[i]])
+  unzip(zipfile = file.path(data_dir, str_c(files[[i]],".zip")), 
+        exdir = data_dir)
+  df <- read.csv(file = file.path(data_dir, str_c(files[[i]],".csv")))
+}
+
+# Question 4
+
+dfs <- vector(mode = "list")
+
+# Question 5
+
+for (i in 1:length(files)) {
+  print(files[i])
+  print(files[[i]])
+  unzip(zipfile = file.path(data_dir, str_c(files[[i]],".zip")), 
+        exdir = data_dir)
+  df <- read.csv(file = file.path(data_dir, str_c(files[[i]],".csv")))
+  dfs[[i]] <- df 
 }
 
 ## -----------------------------------------------------------------------------
