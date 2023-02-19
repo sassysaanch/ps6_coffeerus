@@ -1,0 +1,219 @@
+---
+title: "Problem Set #6"
+author: "Clayton Becker"
+date: "February 18th, 2023"
+urlcolor: blue
+output: 
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", highlight = TRUE, warning = FALSE, message = FALSE, eval= FALSE)
+```
+
+\textcolor{red}{\textbf{Grade: /32}}
+
+# Overview:
+
+The purpose of this problem set is to give you practice writing loops. You will be using loops to batch download Integrated Postsecondary Education Data System (IPEDS) files. The goal is to download HD data files for particular years (e.g., 2017-2019) from the [IPEDS](https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx?goToReportId=7) website, unzip those files, and load the CSV data files into R. 
+
+For this problem set, you will not need to edit the `problemset6.Rmd` file, nor will you need to submit the .Rmd and .pdf files this week. We will base our grading entirely on the work you will do in your R script file. 
+
+# Using Git and Github
+
+Starting with this problem set, you will be working on a shared repository with your homework group. One member of your group will create a private repo on GitHub, then you will all clone it to your computers. You should take turns creating the repo on GitHub each week. We encourage you all to communicate with your group by creating issues on your shared repository.
+
+We will no longer be asking you to run specific git commands at specific times throughout this problem set. Instead, you are free to make these decisions. However, there are **some requirements** for this problem set:
+
+- You must create a separate branch (`dev_lastname_firstname`) to do your own work
+- You will turn in your files on the `main` branch (see final section), meaning you will need to merge in your work from `dev`
+    
+What you are free to decide on:
+
+- You can add and commit your changes whenever you'd like (e.g., after each section in the problem set)
+- Feel free to work together with your group members. For example, if you want to share your code with each other to discuss, you can merge your `dev` branch to `main` and push. Others can pull your code to take a look. We encourage you all to practice pushing and pulling changes to the remote.
+- Feel free to edit the `.gitignore` file in your repo. For example, you will be downloading IPEDS data for this problem set - you can choose to add your data directory to `.gitignore` if you'd like to keep your data local.
+    
+Some things to keep in mind/things you may encounter:
+
+- When you are working on a shared repository, before doing any git operations it is usually good to run a `git pull` from the main branch to pull in any recent changes teammates have made to the `main` branch 
+- Since you will be doing most of your work from your `dev_lastname_firstname` branch, you may want to keep this branch up to date w/ changes teammates have pushed to `main.` Do this using the following steps:
+  - switch to main branch
+  - `git pull` to pull in any changes teammates have pushed to the main
+  - switch to `dev_lastname_firstname` branch
+  - merge changes from main branch into your `dev_lastname_firstname` branch
+- If you run into merge conflicts with files both you and a team member modified (e.g., shared files like `.gitignore`), please be mindful not to delete changes made by others when you're resolving the conflict.
+
+
+## Part I: Setting up repository
+
+\textcolor{red}{\textbf{/2}}
+
+1. Have one member of your group create a new private GitHub repository [here](https://github.com/organizations/anyone-can-cook/repositories/new) called `ps6_team_name` (fill in your team name). Make sure to initialize the repo with a `README.md` as well as a `.gitignore` file with the R template.
+
+    The member who created the private repository should also give the other group members access to the repository by going on Settings > Manage Access > Invite teams or people. Then, all members of your group should clone this repository to your computers. Don't forget to change directories to where you want to save the repo before cloning it.
+
+\textcolor{red}{\textbf{/1}}
+
+2. Create a new **RStudio Project** for this repository. In your **RStudio Terminal**, create a new branch called `dev_lastname_firstname` (fill in your name) and use that branch to do all your work on.
+
+\textcolor{red}{\textbf{/1}}
+
+3. Download the **Problem set R script template** available under the **Syllabus & Resources** section of the [class website](https://anyone-can-cook.github.io/rclass2/) (or click [here](https://anyone-can-cook.github.io/rclass2/assets/resources/ps_template.R)). Rename the downloaded `ps_template.R` to `ps6_lastname_firstname.R` (fill in your name) and save it inside your project directory.
+
+    Open the R script and fill out your information in the header on top. Then, load the `tidyverse` library.
+
+\textcolor{red}{\textbf{/0.5}}
+
+4. Create a subdirectory within your `ps6_team_name` directory called `data_lastname_firstname` (fill in your name). In your `ps6_lastname_firstname.R` script, create a file path object called `data_dir` pointing to that directory.
+
+\textcolor{red}{\textbf{/0.5}}
+
+5. You will be downloading and working with IPEDS data in the rest of the problem set. More specifically, you'll be downloading the IPEDS HD data files (CSV data file, data dictionary, and Stata do file) for the years 2017, 2018, and 2019. The URL to download the data file will follow the following format:
+
+    - `https://nces.ed.gov/ipeds/datacenter/data/<file_name><suffix>.zip`
+    - E.g., URL to download 2017 CSV data: `https://nces.ed.gov/ipeds/datacenter/data/HD2017.zip`
+    - E.g., URL to download 2018 Stata file: `https://nces.ed.gov/ipeds/datacenter/data/HD2018_Stata.zip`
+
+    To help you construct the URLs, we have provided the following objects in the code block below. Copy these lines into your `ps6_lastname_firstname.R`. You will be using them in the next few sections.
+
+```r
+url <- 'https://nces.ed.gov/ipeds/datacenter/data/'
+
+files <- c('HD2017', 'HD2018', 'HD2019')
+suffixes <- c('', '_Dict', '_Stata')
+```
+
+
+## Part II: Looping over elements
+
+In this section, you will be downloading the IPEDS HD data files using their URLs. The following steps will guide you through doing this using loops, but we __recommend you to practice downloading individual files without a loop first__. This may help you get a better sense of what is happening when you switch to using a loop. Once you are ready, move on to the next step.
+
+\textcolor{red}{\textbf{/2}}
+
+1. Start by first creating a for loop that **loops over the elements** of the object `files`. Inside the body of the loop, use `writeLines()` to print out each element in `files`.
+
+    _Note_: It may be helpful to be descriptive when printing out the elements. For example, instead of just having it print `HD2017`, `HD2018`, etc. you can have it print `i=HD2017`, `i=HD2018`, etc. (`i` here being the "looping" variable, but you can name it whatever you want)
+
+\textcolor{red}{\textbf{/2}}
+
+2. Next, inside the body of your loop (under the print statement), create another for loop that iterates over each element in `suffixes`. Within the body of this second nested loop, print out each element in `suffixes`.
+
+\textcolor{red}{\textbf{/1}}
+
+3. Still inside the body of the inner loop, create an object called `file_name` that uses `str_c()` to combine the filename, suffix, and the extension `.zip`. You can print out `file_name` to see how it looks if you'd like.
+
+    _Hint_: `file_name` should look like `HD2017.zip`, `HD2017_Dict.zip`, `HD2017_Stata.zip`, etc.
+
+\textcolor{red}{\textbf{/1}}
+
+4. Next, you will construct the full download URL for the data file. Create an object called `file_url` that combines the `url` with the `file_name`. Next, add a line that wraps `str_c()` within `writeLines()` to print the value of the object `file_url`
+
+    _Hint_: `file_url` should look like `https://nces.ed.gov/ipeds/datacenter/data/HD2017.zip`, etc.
+
+\textcolor{red}{\textbf{/2}}
+
+5. Finally, still within your inner loop, write a line of R code to download the file at `file_url` into your `data_dir`. The downloaded file should be named `file_name`. Run your code and you should see 9 zip files downloaded into your `data_dir`.
+
+
+## Part III: Looping over indices
+
+In this section, you will be working with the 3 CSV data files you previously downloaded -- specifically, unzipping the file and reading in the CSV data. Again, we recommend you to practice unzipping and reading in individual CSV files without a loop first. Once you are ready, move on to the next step.
+
+\textcolor{red}{\textbf{/2}}
+
+1. Start by creating a new for loop that **loops over the indices** of the `files` vector. Within the body of the loop, print out both the index and the element in `files` at that index. Remember that you can access specific elements in `files` by their indices.
+
+\textcolor{red}{\textbf{/2}}
+
+2. Next, unzip each of the CSV data files inside your for loop. Recall that the CSV files do not have any suffixes, so the filenames will just be each element in `files` you are looping over plus the `.zip` extension. Unzip the CSV files into your `data_dir`.
+
+\textcolor{red}{\textbf{/1}}
+
+3. Now, you will read in the unzipped CSV files. Still within the same loop from the previous step, add a line to read in the CSV data file (which has the `.csv` extension) and assign it to an object called `df`.
+
+\textcolor{red}{\textbf{/1}}
+
+4. Notice that when you run your loop from the previous step, the `df` object will be overwritten during each iteration of the loop such that after the loop completes, `df` contains data from the last file specified in the `files` vector (i.e., the `HD2019` CSV file).
+
+    In this step, you will create a new object that will store the dataframes created from all 3 iterations of the loop. Start by creating a new object called `dfs` before the start of your loop using `vector()`. The `mode` should be `"list"` (because dataframe objects are of type `list`) and the `length` of the new vector should be equal to the length of the `files` vector.
+
+\textcolor{red}{\textbf{/1}}
+
+5. Finally, add a line of code within your for loop that will store each `df` object created within the loop to the `dfs` object. 
+
+
+## Part IV: Looping over names
+
+\textcolor{red}{\textbf{/2}}
+
+1. In this section, we will focus on just the 2019 HD dataframe. Use a subsetting operator to access the 2019 dataframe from `dfs` and save it to an object called `hd2019`. _Hint_: Make sure to use the subsetting operator that returns the dataframe object itself (i.e., `hd2019` should have the class `data.frame`) 
+
+\textcolor{red}{\textbf{/2}}
+
+2. From the `hd2019` dataframe, let's focus on the `HBCU`, `TRIBAL`, and `HOSPITAL` variables. These variables use the value `1` to indicate it is a historically black college/universities (HBCU), a tribal college, or has a hospital, respectively; and they use the value `2` or a negative value to indicate it is NOT one of those things or has missing data. Our goal is to turn these variables into `0/1` indicator variables, where we keep the value at `1` if it is an HBCU/tribal college/hospital and `0` if it is not.
+
+    Create a new object called `hd2019_subset` from `hd2019` by performing the following manipulations:
+    
+    - Modify the `HBCU`, `TRIBAL`, and `HOSPITAL` variables to turn them into `0/1` indicator variables
+    - Select only these 3 variables to be kept in `hd2019_subset`
+
+\textcolor{red}{\textbf{/1}}
+
+3. The `hd2019_subset` dataframe you created in the previous step should contain only the 3 variables `HBCU`, `TRIBAL`, and `HOSPITAL`, which are now all `0/1` indicator variables. Create a new for loop that will **loop over the names** of this dataframe. Print out each column name (i.e., variable) in the body of your loop.
+
+\textcolor{red}{\textbf{/2}}
+
+4. Inside the body of the loop, remember we can also access each dataframe column by its name. Calculate the sum of each column (which will be equal to the number of HBCU/tribal/hospital schools), and add that to your print statement from the previous step. Copy the outputs to your R script as a comment.
+
+    _Hint:_ Your output should look something like `Number of HBCU=XXXX`, `Number of TRIBAL=XXXX`, etc.
+
+\textcolor{red}{\textbf{/3}}
+
+5. Now, create a new loop that is similar to the previous one in that you will be calculating the sum of each column, but this time **loop over the indices** of `hd2019_subset` instead. Then instead of printing the results, store them in a new object called `nums`. Create `nums` first before the start of your loop using `vector()`, similar to what you've done in Part III Q4.
+
+    After you run your loop, the `nums` vector should contain the same values you printed in the previous step. If you'd like, you can run the following code to create a bar plot from `nums`:
+    
+```r
+ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
+  geom_bar(stat = 'identity') +
+  scale_x_continuous(breaks = seq_along(hd2019_subset), labels = names(hd2019_subset)) +
+  xlab(NULL) + ylab(NULL)
+```
+## Extra credit - ggplot
+
+\textcolor{red}{\textbf{/2}}
+
+For extra credit, create a visualization from the dataset that you used in this exercise. You can create the visualization with ggplot in the `.Rmd` markdown file or the `.R` script file, depending on the weekly problem set. 
+
+Use a `#comment` to let us know this is your extra credit plot. Don't forget to update your git repository!
+
+## Part V: Create a GitHub issue   
+
+\textcolor{red}{\textbf{/2}}
+
+This week, create a section in your ps6.R script with the url links to your github issue posts.
+
+- Go to the [class repository](https://github.com/anyone-can-cook/rclass2_student_issues_w23/issues) and create a new issue.
+- Please refer to [rclass2 student issues readme](https://github.com/anyone-can-cook/rclass2_student_issues_w23/blob/main/README.md) for instructions on how to post questions or things you've learned.
+- You can either:
+  - Ask a question that you have about this problem set or the course in general. Make sure to assign the instructors (@ozanj, @xochilthlopez, @joycehnguy, @augias) and mention your team (e.g., @anyone-can-cook/your_team_name).
+  - Share something you learned from this problem set or the course. Please mention your team (e.g., @anyone-can-cook/your_team_name).
+- You are also required to respond to at least one issue posted by another student.
+
+- Paste the url to your issue here: 
+- Paste the url to the issue you responded to here: 
+
+
+# Submit problem set  
+Submit your `ps6_lastname_firstname.R` on the `main` branch of your repository. Do so by merging your personal `dev_lastname_firstname` into the `main` branch. Remember to pull changes from the remote ps6 repository on main before merging and pushing your changes!
+
+You aren't required to push any of the data file you've downloaded (e.g., if you chose to add them to `.gitignore`), but you can if you'd like.
+
+<!-- **Knit to pdf** by clicking the "Knit" button near the top of your RStudio window (icon with blue yarn ball) or drop down and select "Knit to PDF" -->
+
+<!-- Submit both the `.Rmd` and `.pdf` files, as well as your `ps6_lastname_firstname.R`, to the `main` branch of your repository. You aren't required to push any of the data file you've downloaded (e.g., if you chose to add them to `.gitignore`), but you can if you'd like. -->
