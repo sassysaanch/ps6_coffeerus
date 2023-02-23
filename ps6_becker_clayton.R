@@ -198,7 +198,27 @@ ggplot(data.frame(nums), aes(seq_along(nums), nums)) +
   scale_x_continuous(breaks = seq_along(hd2019_subset), labels = names(hd2019_subset)) +
   xlab(NULL) + ylab(NULL)
 
+# Bonus ggplot 
 
+main_dir <- file.path(".")
+
+plot_subset <- hd2019 %>% filter(HOSPITAL == 1) %>% select(HOSPITAL, CONTROL) %>% mutate(
+  CONTROL = if_else(CONTROL == 1, "Public", "Private")
+)
+
+png(file.path(main_dir, "bonus_plot.png"), width = 600, height = 600, units = "px")
+  plot_subset %>% group_by(CONTROL) %>% 
+    ggplot(aes(x = CONTROL, y = HOSPITAL, fill = CONTROL)) +
+  scale_fill_brewer(palette = "Pastel1") +
+  geom_col() +
+  ylab("Number of Hospitals") + xlab("Public or Private") + 
+    labs(title = "Number of Hospitals by Institution Control", 
+         caption = "Based on NCES IPEDS data for 2019") +
+  scale_x_discrete() +
+theme_classic()
+dev.off()
+
+plot_subset %>% group_by(CONTROL) %>% count(HOSPITAL)
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
 ## -----------------------------------------------------------------------------
