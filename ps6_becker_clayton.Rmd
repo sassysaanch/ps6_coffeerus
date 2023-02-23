@@ -206,7 +206,7 @@ This week, create a section in your ps6.R script with the url links to your gith
 - You are also required to respond to at least one issue posted by another student.
 
 - Paste the url to your issue here: https://github.com/anyone-can-cook/rclass2_student_issues_w23/issues/254
-- Paste the url to the issue you responded to here: 
+- Paste the url to the issue you responded to here: https://github.com/anyone-can-cook/rclass2_student_issues_w23/issues/276
 
 
 # Submit problem set  
