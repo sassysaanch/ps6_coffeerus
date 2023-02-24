@@ -193,12 +193,14 @@ for (i in names(hd2019_subset)) {
 #  writeLines(str_c("COLUMN NAME = " , i)) #assignment seems to suggest not to do this.
   writeLines(str_c("  NUMBER OF ", i, " = ", sum(hd2019_subset[i], na.rm = TRUE)))
   for (i in seq_along(hd2019_subset)) {
-    nums[[i]] <- str_c(sum(hd2019_subset[[i]]))
+    nums[[i]] <- sum(hd2019_subset[[i]]) 
   }}
 
 #NUMBER OF HBCU = 102
 #NUMBER OF TRIBAL = 35
 #NUMBER OF HOSPITAL = 96
+
+#note: the loop here is helping/simplifying our sums of 3 variables.
 
 ####steps to check the building of nums####
 #nums <- vector(mode = "numeric", length = length(hd2019_subset)) #store in a new object called nums. 
@@ -305,20 +307,27 @@ git clone https://github.com/anyone-can-cook/ps6_coffeerus
 # create dev branch
 git checkout -b dev_Cousins_SarahJ
 git branch -a
-
-##ask about files on main
-
+#add or connect re
 # Incorporate remote changes to current branch
 git pull
-#merge from dev to main -- when to do this?
-git merge main
+#adding
+git add .
+#checking status
+git status 
 #committing 
-git add ps6_Cousins_SarahJ.R
 git commit -m "inital commit of ps6_Cousins_SarahJ.R"
-#send to main??
-git merge main
-git push --set-upstream dev_Cousins_SarahJ main #is this right?
+#push w upstream set for inital post--just watch out for
+git push -u origin dev_Cousins_SarahJ   
 
+##UPDATES
+#adding
+git add .
+#checking status
+git status 
+#committing 
+git commit -m "revision of R file"
+#push 
+git push origin dev_Cousins_SarahJ
 
 ## -----------------------------------------------------------------------------
 ## END SCRIPT
